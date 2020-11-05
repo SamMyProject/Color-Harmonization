@@ -59,26 +59,7 @@ def ini(x,y,h):
     for i in range(180):
         frearr[0,i]=len(h[h==i])
     label=np.zeros([x,y])  
-# def distance(border,h,s,i):
-#     hue=np.copy(h)
-#     mask=False
-#     for k in border:
-#         mask=mask | ((hue>k[0])&(hue<k[1]))
-#     hue[mask]=0
-#     f=pt[0,0]
-#     a=list(np.abs(hue[~mask]-(f+i)))
-#     f=pt[0,1]
-#     b=list(np.abs(hue[~mask]-(f+i)))
-#     f=pt[1,0]
-#     c=list(np.abs(hue[~mask]-(f+i)))
-#     f=pt[1,1]
-#     d=list(np.abs(hue[~mask]-(f+i)))
-#     x=np.minimum(a,b)
-#     y=np.minimum(c,d)
-#     v=np.minimum(x,y)*s[~mask]/255
-#     # res=s*hue
-#     return sum(v)
-
+    
 def distance1(h,i,s):
     global label
     [x,y]=h.shape
@@ -132,66 +113,11 @@ def label1(h,i,s1b1,s1b2,s2b1,s2b2):
         dis2=(dis2+180)%180
     mid1=int(dis1/2)
     mid2=int(dis2/2)
-#    if s1b2+mid1>s2b2+mid2:
-#        label[:]=lab2
-#        for i in range(s2b2+mid2,s1b2+mid1,1):
-#            label[hue==i]=lab1
-#    else:
-#        label[:]=lab1
-#        for i in range(s1b2+mid1,s2b2+mid2,1):
-#            label[hue==i]=lab2
             
     minval=10000000000
     minidx1=(s1b2+mid1)%180
     minidx2=(s2b2+mid2)%180
-    # if s2b1>s1b2:
-    #     minidx1=s1b2+1+np.argmin(frearr[0,s1b2+1:s2b1])
-    #     # minidx1=s1b2+1+np.argmin(frearr[0,int((s1b2+minidx1)/2):int((s2b1+minidx1)/2)])
-    #     # for i in range(s1b2+1,s2b1,1):
-    #     #     if len((hue[hue==i]))<minval:
-    #     #         minval=len((hue[hue==i]))
-    #     #         minidx1=i
-    # else:
-    #     if s1b2+1==180:
-    #         s1b2=178 
-    #     a=s1b2+1+np.argmin(frearr[0,(s1b2+1)%180:180])
-    #     if s2b1==0:
-    #         s2b1=1 
-    #     b=np.argmin(frearr[0,0:s2b1])
-    #     if a<b:
-    #         minidx1=a
-    #         # minidx1=s1b2+1+np.argmin(frearr[0,int((s1b2+minidx1)%180/2):int((s2b1+minidx1)%180/2)])
-    #     else:
-    #         minidx1=b
-    #         # minidx1=s1b2+1+np.argmin(frearr[0,int((s1b2+minidx1)%180/2):int((s2b1+minidx1)%180/2)])
-
-    #     # for i in range(s1b2+1,s1b2+dis1,1):
-    #     #     if len((hue[hue==(i%180)]))<minval:
-    #     #         minval=len((hue[hue==(i%180)]))
-    #     #         minidx1=i
-    # minval=10000000000
-    # if s1b1>s2b2:
-    #     minidx2=s2b2+1+np.argmin(frearr[0,(s2b2+1):s1b1])
-    #     # minidx2=s2b2+1+np.argmin(frearr[0,int((s2b2+minidx2)/2):int((s1b1+minidx2)/2)])
-    #     # for i in range(s2b2+1,s1b1,1):
-    #     #     if len((hue[hue==i]))<minval:
-    #     #         minval=len((hue[hue==i]))
-    #     #         minidx2=i
-    # else:
-    #     if s2b2+1==180:
-    #         s2b2=178 
-    #     a=s2b2+1+np.argmin(frearr[0,(s2b2+1)%180:180])
-    #     if s1b1==0:
-    #         s1b1=1 
-    #     b=np.argmin(frearr[0,0:s1b1])
-    #     if a<b:
-    #         minidx2=a
-    #     else:
-    #         minidx2=b
-    #     # for i in range(s2b2+1,s2b2+dis2,1):
-    #     #     if len((hue[hue==(i%180)]))<minval:
-    #     #         minval=len((hue[hue==(i%180)]))
-    #     #         minidx2=i
+    
     step1=minidx1-s1b2
     step2=minidx2-s2b2
     if step1<0:
@@ -239,19 +165,12 @@ def calE2(v1,v2,s,label,h): #兩扇形中間點的hue value +-10度
                     diff+=1*s[i,j]/255/np.abs(h[i,j]-h[i,j+1])
     return diff
 
+def gaussian(x, alpha, r):
+    return 1./(math.sqrt(alpha**math.pi))*np.exp(-alpha*np.power((x - r), 2.))
 
 
 if __name__== "__main__":
     t1=time.time()
-    # cap = cv2.VideoCapture(0) #open camera
-    # while(True):
-    #     ret, frame = cap.read()
-    #     cv2.imshow('frame', frame)
-    #     if cv2.waitKey(1) & 0xFF == ord('q'):
-    #         cv2.imwrite('D:/test.jpg',frame)
-    #         break
-    # cap.release()
-    # cv2.destroyAllWindows()
     img = cv2.imread('D:/testpic/3723.jpg')
     [x,y,z]=img.shape
     #==============for downsize=====================
@@ -312,8 +231,7 @@ if __name__== "__main__":
                 else:
                     d=int(pt[1,1]+pt[1,0])/2
                 cp=(d+mini)%180
-            if targetlabel[i,j]!=0:
-                shift_h[i,j]=(cp+w*(1-np.random.normal(0,w,1)*np.abs(h[i,j]-cp).astype(np.int16)))%180
+            shift_h[i,j]=(cp+w*(1-gaussian(np.abs(h[i,j]-cp).astype(np.int16),w,0)))%180
     hsv[:,:,0]=shift_h
     convert = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
     pl.figure(1)
